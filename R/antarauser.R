@@ -4,9 +4,17 @@
 #' @param keyword Karakter. Kata kunci pencarian (misalnya "ekonomi").
 #' @param awal Karakter. Tanggal awal pencarian (misalnya "2025-01-01").
 #' @param akhir Karakter. Tanggal akhir pencarian (misalnya "2025-01-31").
+#' @import rvest
+#' @import dplyr
+#' @import magrittr
+#' @import lubridate
+#' @import stringr
+#' @import tibble
+#' @import tidyr
 #' @importFrom stats filter
 #' @importFrom rvest read_html html_nodes html_text
-#' @importFrom dplyr %>% mutate case_when
+#' @importFrom dplyr |> mutate case_when
+#' @importFrom magrittr |>
 #' @importFrom lubridate dmy_hm
 #' @importFrom stringr str_squish
 #' @importFrom tibble tribble
@@ -15,7 +23,7 @@
 #' @export
 
 utils::globalVariables(c("katakunci", "kategori", "kategori2", "tanggal", "lokasi",
-                         "isi", "%>%", "fotocap", "endpage", "coba"))
+                         "isi", "|>", "fotocap", "endpage", "coba"))
 
 antarauser <- function(wilayahantara, keyword, awal, akhir) {
   if(wilayahantara == "jatim"){
@@ -26,17 +34,17 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
     laman_awal <- rvest::read_html(url_awal)
 
     # cek elemen end page
-    endpage <- laman_awal %>% rvest::html_nodes(".pagination-sm a") %>% rvest::html_text() %>% trimws() %>% max(na.rm = TRUE) %>% as.numeric()
+    endpage <- laman_awal |> rvest::html_nodes(".pagination-sm a") |> rvest::html_text() |> trimws() |> max(na.rm = TRUE) |> as.numeric()
 
     #LOOPING
     isi <- function(x){
-      teks <- rvest::read_html(x) %>% rvest::html_nodes('#print_content .clearfix') %>% rvest::html_text() %>% stringr::str_squish() %>%
+      teks <- rvest::read_html(x) |> rvest::html_nodes('#print_content .clearfix') |> rvest::html_text() |> stringr::str_squish() |>
         paste(collapse = ",")
       return(teks)
     }
 
     fotocap <- function(x){
-      narfoto <- rvest::read_html(x) %>% rvest::html_nodes('.flex-caption') %>% rvest::html_text() %>% stringr::str_squish() %>%
+      narfoto <- rvest::read_html(x) |> rvest::html_nodes('.flex-caption') |> rvest::html_text() |> stringr::str_squish() |>
         paste(collapse = ",")
       return(narfoto)
     }
@@ -47,9 +55,9 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
       url <-paste0("https://", wilayahantara, ".antaranews.com/search/", keyword, "/", awal, "/", akhir, "/", hasil)
       laman <- rvest::read_html(url)
 
-      judul <- laman %>% rvest::html_nodes('.simple-big h3 a') %>% rvest::html_text()
-      tgl <- laman %>% rvest::html_nodes('.simple-big span') %>% rvest::html_text()
-      linkjudul <- laman %>% rvest::html_nodes('.simple-big h3 a') %>% rvest::html_attr("href") %>%
+      judul <- laman |> rvest::html_nodes('.simple-big h3 a') |> rvest::html_text()
+      tgl <- laman |> rvest::html_nodes('.simple-big span') |> rvest::html_text()
+      linkjudul <- laman |> rvest::html_nodes('.simple-big h3 a') |> rvest::html_attr("href") |>
         paste(sep = "")
 
       isiberita <- sapply(linkjudul, FUN = isi, USE.NAMES = FALSE)
@@ -260,20 +268,20 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
     judulantara <- antarajatim
 
     #Labelisasi sesuai katelapus
-    judulantara %>%
-      dplyr::mutate(katakunci = isiberita) %>%
-      tidyr::separate_rows(katakunci, sep = ' ') %>%
-      dplyr::mutate(katakunci = tolower(katakunci)) %>%
-      dplyr::left_join(katelapus) %>%
-      filter(!is.na(kategori)) %>%
+    judulantara |>
+      dplyr::mutate(katakunci = isiberita) |>
+      tidyr::separate_rows(katakunci, sep = ' ') |>
+      dplyr::mutate(katakunci = tolower(katakunci)) |>
+      dplyr::left_join(katelapus) |>
+      filter(!is.na(kategori)) |>
       dplyr::select(-katakunci) -> judulantara2
 
     #Mendapatkan kategori teks berdasarkan labelisasi kata paling sering muncul
-    judulantara2 %>%
-      dplyr::group_by(judul) %>%
+    judulantara2 |>
+      dplyr::group_by(judul) |>
       dplyr::summarise(kategori2 = names(sort(table(kategori), decreasing = TRUE))[1],
                        kategori = toString(kategori),
-                       .groups = "drop") %>%
+                       .groups = "drop") |>
       dplyr::select(judul, kategori, kategori2) -> oke
 
     #Menggabungkan antara data awal dengan data yang berhasil dilabelisasi
@@ -287,7 +295,7 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
                            paste("Kota", coba$wilayah),
                            coba$wilayah)
 
-    coba <- coba %>%
+    coba <- coba |>
       dplyr::mutate(
         tanggal = tgl,
         tanggal = gsub("Januari", "January", tanggal),
@@ -302,7 +310,7 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
       )
 
     # Mengubah format tanggal
-    coba <- coba %>%
+    coba <- coba |>
       dplyr::mutate(
         tanggal = dplyr::case_when(
           grepl("menit lalu|jam lalu|hari lalu", tgl) ~ as.character(Sys.Date()),
@@ -322,17 +330,17 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
     laman_awal <- rvest::read_html(url_awal)
 
     # cek elemen end page
-    endpage <- laman_awal %>% rvest::html_nodes(".pagination-sm a") %>% rvest::html_text() %>% trimws() %>% max(na.rm = TRUE) %>% as.numeric()
+    endpage <- laman_awal |> rvest::html_nodes(".pagination-sm a") |> rvest::html_text() |> trimws() |> max(na.rm = TRUE) |> as.numeric()
 
     #LOOPING
     isi <- function(x){
-      teks <- rvest::read_html(x) %>% rvest::html_nodes('#print_content .clearfix') %>% rvest::html_text() %>% stringr::str_squish() %>%
+      teks <- rvest::read_html(x) |> rvest::html_nodes('#print_content .clearfix') |> rvest::html_text() |> stringr::str_squish() |>
         paste(collapse = ",")
       return(teks)
     }
 
     fotocap <- function(x){
-      narfoto <- rvest::read_html(x) %>% rvest::html_nodes('.flex-caption') %>% rvest::html_text() %>% stringr::str_squish() %>%
+      narfoto <- rvest::read_html(x) |> rvest::html_nodes('.flex-caption') |> rvest::html_text() |> stringr::str_squish() |>
         paste(collapse = ",")
       return(narfoto)
     }
@@ -343,9 +351,9 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
       url <-paste0("https://", wilayahantara, ".antaranews.com/search/", keyword, "/", awal, "/", akhir, "/", hasil)
       laman <- rvest::read_html(url)
 
-      judul <- laman %>% rvest::html_nodes('.simple-big h3 a') %>% rvest::html_text()
-      tgl <- laman %>% rvest::html_nodes('.simple-big span') %>% rvest::html_text()
-      linkjudul <- laman %>% rvest::html_nodes('.simple-big h3 a') %>% rvest::html_attr("href") %>%
+      judul <- laman |> rvest::html_nodes('.simple-big h3 a') |> rvest::html_text()
+      tgl <- laman |> rvest::html_nodes('.simple-big span') |> rvest::html_text()
+      linkjudul <- laman |> rvest::html_nodes('.simple-big h3 a') |> rvest::html_attr("href") |>
         paste(sep = "")
 
       isiberita <- sapply(linkjudul, FUN = isi, USE.NAMES = FALSE)
@@ -556,20 +564,20 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
     judulantara <- antarajatim
 
     #Labelisasi sesuai katelapus
-    judulantara %>%
-      dplyr::mutate(katakunci = isiberita) %>%
-      tidyr::separate_rows(katakunci, sep = ' ') %>%
-      dplyr::mutate(katakunci = tolower(katakunci)) %>%
-      dplyr::left_join(katelapus) %>%
-      filter(!is.na(kategori)) %>%
+    judulantara |>
+      dplyr::mutate(katakunci = isiberita) |>
+      tidyr::separate_rows(katakunci, sep = ' ') |>
+      dplyr::mutate(katakunci = tolower(katakunci)) |>
+      dplyr::left_join(katelapus) |>
+      filter(!is.na(kategori)) |>
       dplyr::select(-katakunci) -> judulantara2
 
     #Mendapatkan kategori teks berdasarkan labelisasi kata paling sering muncul
-    judulantara2 %>%
-      dplyr::group_by(judul) %>%
+    judulantara2 |>
+      dplyr::group_by(judul) |>
       dplyr::summarise(kategori2 = names(sort(table(kategori), decreasing = TRUE))[1],
                        kategori = toString(kategori),
-                       .groups = "drop") %>%
+                       .groups = "drop") |>
       dplyr::select(judul, kategori, kategori2) -> oke
 
     #Menggabungkan antara data awal dengan data yang berhasil dilabelisasi
@@ -583,7 +591,7 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
                            paste("Kota", coba$wilayah),
                            coba$wilayah)
 
-    coba <- coba %>%
+    coba <- coba |>
       dplyr::mutate(
         tanggal = tgl,
         tanggal = gsub("Januari", "January", tanggal),
@@ -598,7 +606,7 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
       )
 
     # Mengubah format tanggal
-    coba <- coba %>%
+    coba <- coba |>
       dplyr::mutate(
         tanggal = case_when(
           grepl("menit lalu|jam lalu|hari lalu", tgl) ~ as.character(Sys.Date()),
@@ -618,17 +626,17 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
     laman_awal <- rvest::read_html(url_awal)
 
     # cek elemen end page
-    endpage <- laman_awal %>% rvest::html_nodes(".pagination-sm a") %>% rvest::html_text() %>% trimws() %>% max(na.rm = TRUE) %>% as.numeric()
+    endpage <- laman_awal |> rvest::html_nodes(".pagination-sm a") |> rvest::html_text() |> trimws() |> max(na.rm = TRUE) |> as.numeric()
 
     #LOOPING
     isi <- function(x){
-      teks <- rvest::read_html(x) %>% rvest::html_nodes('#print_content .clearfix') %>% rvest::html_text() %>% stringr::str_squish() %>%
+      teks <- rvest::read_html(x) |> rvest::html_nodes('#print_content .clearfix') |> rvest::html_text() |> stringr::str_squish() |>
         paste(collapse = ",")
       return(teks)
     }
 
     fotocap <- function(x){
-      narfoto <- rvest::read_html(x) %>% rvest::html_nodes('.flex-caption') %>% rvest::html_text() %>% stringr::str_squish() %>%
+      narfoto <- rvest::read_html(x) |> rvest::html_nodes('.flex-caption') |> rvest::html_text() |> stringr::str_squish() |>
         paste(collapse = ",")
       return(narfoto)
     }
@@ -639,9 +647,9 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
       url <-paste0("https://", wilayahantara, ".antaranews.com/search/", keyword, "/", awal, "/", akhir, "/", hasil)
       laman <- rvest::read_html(url)
 
-      judul <- laman %>% rvest::html_nodes('.simple-big h3 a') %>% rvest::html_text()
-      tgl <- laman %>% rvest::html_nodes('.simple-big span') %>% rvest::html_text()
-      linkjudul <- laman %>% rvest::html_nodes('.simple-big h3 a') %>% rvest::html_attr("href") %>%
+      judul <- laman |> rvest::html_nodes('.simple-big h3 a') |> rvest::html_text()
+      tgl <- laman |> rvest::html_nodes('.simple-big span') |> rvest::html_text()
+      linkjudul <- laman |> rvest::html_nodes('.simple-big h3 a') |> rvest::html_attr("href") |>
         paste(sep = "")
 
       isiberita <- sapply(linkjudul, FUN = isi, USE.NAMES = FALSE)
@@ -852,20 +860,20 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
     judulantara <- antarajatim
 
     #Labelisasi sesuai katelapus
-    judulantara %>%
-      dplyr::mutate(katakunci = isiberita) %>%
-      tidyr::separate_rows(katakunci, sep = ' ') %>%
-      dplyr::mutate(katakunci = tolower(katakunci)) %>%
-      dplyr::left_join(katelapus) %>%
-      filter(!is.na(kategori)) %>%
+    judulantara |>
+      dplyr::mutate(katakunci = isiberita) |>
+      tidyr::separate_rows(katakunci, sep = ' ') |>
+      dplyr::mutate(katakunci = tolower(katakunci)) |>
+      dplyr::left_join(katelapus) |>
+      filter(!is.na(kategori)) |>
       dplyr::select(-katakunci) -> judulantara2
 
     #Mendapatkan kategori teks berdasarkan labelisasi kata paling sering muncul
-    judulantara2 %>%
-      dplyr::group_by(judul) %>%
+    judulantara2 |>
+      dplyr::group_by(judul) |>
       dplyr::summarise(kategori2 = names(sort(table(kategori), decreasing = TRUE))[1],
                        kategori = toString(kategori),
-                       .groups = "drop") %>%
+                       .groups = "drop") |>
       dplyr::select(judul, kategori, kategori2) -> oke
 
     #Menggabungkan antara data awal dengan data yang berhasil dilabelisasi
@@ -879,7 +887,7 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
                            paste("Kota", coba$wilayah),
                            coba$wilayah)
 
-    coba <- coba %>%
+    coba <- coba |>
       dplyr::mutate(
         tanggal = tgl,
         tanggal = gsub("Januari", "January", tanggal),
@@ -894,7 +902,7 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
       )
 
     # Mengubah format tanggal
-    coba <- coba %>%
+    coba <- coba |>
       dplyr::mutate(
         tanggal = case_when(
           grepl("menit lalu|jam lalu|hari lalu", tgl) ~ as.character(Sys.Date()),
@@ -914,17 +922,17 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
     laman_awal <- rvest::read_html(url_awal)
 
     # cek elemen end page
-    endpage <- laman_awal %>% rvest::html_nodes(".pagination-sm a") %>% rvest::html_text() %>% trimws() %>% max(na.rm = TRUE) %>% as.numeric()
+    endpage <- laman_awal |> rvest::html_nodes(".pagination-sm a") |> rvest::html_text() |> trimws() |> max(na.rm = TRUE) |> as.numeric()
 
     #LOOPING
     isi <- function(x){
-      teks <- rvest::read_html(x) %>% rvest::html_nodes('#print_content .clearfix') %>% rvest::html_text() %>% stringr::str_squish() %>%
+      teks <- rvest::read_html(x) |> rvest::html_nodes('#print_content .clearfix') |> rvest::html_text() |> stringr::str_squish() |>
         paste(collapse = ",")
       return(teks)
     }
 
     fotocap <- function(x){
-      narfoto <- rvest::read_html(x) %>% rvest::html_nodes('.flex-caption') %>% rvest::html_text() %>% stringr::str_squish() %>%
+      narfoto <- rvest::read_html(x) |> rvest::html_nodes('.flex-caption') |> rvest::html_text() |> stringr::str_squish() |>
         paste(collapse = ",")
       return(narfoto)
     }
@@ -935,9 +943,9 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
       url <-paste0("https://", wilayahantara, ".antaranews.com/search/", keyword, "/", awal, "/", akhir, "/", hasil)
       laman <- rvest::read_html(url)
 
-      judul <- laman %>% rvest::html_nodes('.simple-big h3 a') %>% rvest::html_text()
-      tgl <- laman %>% rvest::html_nodes('.simple-big span') %>% rvest::html_text()
-      linkjudul <- laman %>% rvest::html_nodes('.simple-big h3 a') %>% rvest::html_attr("href") %>%
+      judul <- laman |> rvest::html_nodes('.simple-big h3 a') |> rvest::html_text()
+      tgl <- laman |> rvest::html_nodes('.simple-big span') |> rvest::html_text()
+      linkjudul <- laman |> rvest::html_nodes('.simple-big h3 a') |> rvest::html_attr("href") |>
         paste(sep = "")
 
       isiberita <- sapply(linkjudul, FUN = isi, USE.NAMES = FALSE)
@@ -1148,20 +1156,20 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
     judulantara <- antarajatim
 
     #Labelisasi sesuai katelapus
-    judulantara %>%
-      dplyr::mutate(katakunci = isiberita) %>%
-      tidyr::separate_rows(katakunci, sep = ' ') %>%
-      dplyr::mutate(katakunci = tolower(katakunci)) %>%
-      dplyr::left_join(katelapus) %>%
-      filter(!is.na(kategori)) %>%
+    judulantara |>
+      dplyr::mutate(katakunci = isiberita) |>
+      tidyr::separate_rows(katakunci, sep = ' ') |>
+      dplyr::mutate(katakunci = tolower(katakunci)) |>
+      dplyr::left_join(katelapus) |>
+      filter(!is.na(kategori)) |>
       dplyr::select(-katakunci) -> judulantara2
 
     #Mendapatkan kategori teks berdasarkan labelisasi kata paling sering muncul
-    judulantara2 %>%
-      dplyr::group_by(judul) %>%
+    judulantara2 |>
+      dplyr::group_by(judul) |>
       dplyr::summarise(kategori2 = names(sort(table(kategori), decreasing = TRUE))[1],
                        kategori = toString(kategori),
-                       .groups = "drop") %>%
+                       .groups = "drop") |>
       dplyr::select(judul, kategori, kategori2) -> oke
 
     #Menggabungkan antara data awal dengan data yang berhasil dilabelisasi
@@ -1175,7 +1183,7 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
                            paste("Kota", coba$wilayah),
                            coba$wilayah)
 
-    coba <- coba %>%
+    coba <- coba |>
       dplyr::mutate(
         tanggal = tgl,
         tanggal = gsub("Januari", "January", tanggal),
@@ -1190,7 +1198,7 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
       )
 
     # Mengubah format tanggal
-    coba <- coba %>%
+    coba <- coba |>
       dplyr::mutate(
         tanggal = case_when(
           grepl("menit lalu|jam lalu|hari lalu", tgl) ~ as.character(Sys.Date()),
@@ -1210,17 +1218,17 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
     laman_awal <- rvest::read_html(url_awal)
 
     # cek elemen end page
-    endpage <- laman_awal %>% rvest::html_nodes(".pagination-sm a") %>% rvest::html_text() %>% trimws() %>% max(na.rm = TRUE) %>% as.numeric()
+    endpage <- laman_awal |> rvest::html_nodes(".pagination-sm a") |> rvest::html_text() |> trimws() |> max(na.rm = TRUE) |> as.numeric()
 
     #LOOPING
     isi <- function(x){
-      teks <- rvest::read_html(x) %>% rvest::html_nodes('.font17 p') %>% rvest::html_text() %>% stringr::str_squish() %>%
+      teks <- rvest::read_html(x) |> rvest::html_nodes('.font17 p') |> rvest::html_text() |> stringr::str_squish() |>
         paste(collapse = ",")
       return(teks)
     }
 
     fotocap <- function(x){
-      narfoto <- rvest::read_html(x) %>% rvest::html_nodes('.flex-caption') %>% rvest::html_text() %>% stringr::str_squish() %>%
+      narfoto <- rvest::read_html(x) |> rvest::html_nodes('.flex-caption') |> rvest::html_text() |> stringr::str_squish() |>
         paste(collapse = ",")
       return(narfoto)
     }
@@ -1231,9 +1239,9 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
       url <-paste0("https://", wilayahantara, ".antaranews.com/search/", keyword, "/", awal, "/", akhir, "/", hasil)
       laman <- rvest::read_html(url)
 
-      judul <- laman %>% rvest::html_nodes('.simple-big h3 a') %>% rvest::html_text()
-      tgl <- laman %>% rvest::html_nodes('.simple-big span') %>% rvest::html_text()
-      linkjudul <- laman %>% rvest::html_nodes('.simple-big h3 a') %>% rvest::html_attr("href") %>%
+      judul <- laman |> rvest::html_nodes('.simple-big h3 a') |> rvest::html_text()
+      tgl <- laman |> rvest::html_nodes('.simple-big span') |> rvest::html_text()
+      linkjudul <- laman |> rvest::html_nodes('.simple-big h3 a') |> rvest::html_attr("href") |>
         paste(sep = "")
 
       isiberita <- sapply(linkjudul, FUN = isi, USE.NAMES = FALSE)
@@ -1444,20 +1452,20 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
     judulantara <- antarajatim
 
     #Labelisasi sesuai katelapus
-    judulantara %>%
-      dplyr::mutate(katakunci = isiberita) %>%
-      tidyr::separate_rows(katakunci, sep = ' ') %>%
-      dplyr::mutate(katakunci = tolower(katakunci)) %>%
-      dplyr::left_join(katelapus) %>%
-      filter(!is.na(kategori)) %>%
+    judulantara |>
+      dplyr::mutate(katakunci = isiberita) |>
+      tidyr::separate_rows(katakunci, sep = ' ') |>
+      dplyr::mutate(katakunci = tolower(katakunci)) |>
+      dplyr::left_join(katelapus) |>
+      filter(!is.na(kategori)) |>
       dplyr::select(-katakunci) -> judulantara2
 
     #Mendapatkan kategori teks berdasarkan labelisasi kata paling sering muncul
-    judulantara2 %>%
-      dplyr::group_by(judul) %>%
+    judulantara2 |>
+      dplyr::group_by(judul) |>
       dplyr::summarise(kategori2 = names(sort(table(kategori), decreasing = TRUE))[1],
                        kategori = toString(kategori),
-                       .groups = "drop") %>%
+                       .groups = "drop") |>
       dplyr::select(judul, kategori, kategori2) -> oke
 
     #Menggabungkan antara data awal dengan data yang berhasil dilabelisasi
@@ -1471,7 +1479,7 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
                            paste("Kota", coba$wilayah),
                            coba$wilayah)
 
-    coba <- coba %>%
+    coba <- coba |>
       dplyr::mutate(
         tanggal = tgl,
         tanggal = gsub("Januari", "January", tanggal),
@@ -1486,7 +1494,7 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
       )
 
     # Mengubah format tanggal
-    coba <- coba %>%
+    coba <- coba |>
       dplyr::mutate(
         tanggal = case_when(
           grepl("menit lalu|jam lalu|hari lalu", tgl) ~ as.character(Sys.Date()),
@@ -1506,17 +1514,17 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
     laman_awal <- rvest::read_html(url_awal)
 
     # cek elemen end page
-    endpage <- laman_awal %>% rvest::html_nodes(".pagination-sm a") %>% rvest::html_text() %>% trimws() %>% max(na.rm = TRUE) %>% as.numeric()
+    endpage <- laman_awal |> rvest::html_nodes(".pagination-sm a") |> rvest::html_text() |> trimws() |> max(na.rm = TRUE) |> as.numeric()
 
     #LOOPING
     isi <- function(x){
-      teks <- rvest::read_html(x) %>% rvest::html_nodes('#print_content .clearfix') %>% rvest::html_text() %>% stringr::str_squish() %>%
+      teks <- rvest::read_html(x) |> rvest::html_nodes('#print_content .clearfix') |> rvest::html_text() |> stringr::str_squish() |>
         paste(collapse = ",")
       return(teks)
     }
 
     fotocap <- function(x){
-      narfoto <- rvest::read_html(x) %>% rvest::html_nodes('.flex-caption') %>% rvest::html_text() %>% stringr::str_squish() %>%
+      narfoto <- rvest::read_html(x) |> rvest::html_nodes('.flex-caption') |> rvest::html_text() |> stringr::str_squish() |>
         paste(collapse = ",")
       return(narfoto)
     }
@@ -1527,9 +1535,9 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
       url <-paste0("https://", wilayahantara, ".antaranews.com/search/", keyword, "/", awal, "/", akhir, "/", hasil)
       laman <- rvest::read_html(url)
 
-      judul <- laman %>% rvest::html_nodes('.simple-big h3 a') %>% rvest::html_text()
-      tgl <- laman %>% rvest::html_nodes('.simple-big span') %>% rvest::html_text()
-      linkjudul <- laman %>% rvest::html_nodes('.simple-big h3 a') %>% rvest::html_attr("href") %>%
+      judul <- laman |> rvest::html_nodes('.simple-big h3 a') |> rvest::html_text()
+      tgl <- laman |> rvest::html_nodes('.simple-big span') |> rvest::html_text()
+      linkjudul <- laman |> rvest::html_nodes('.simple-big h3 a') |> rvest::html_attr("href") |>
         paste(sep = "")
 
       isiberita <- sapply(linkjudul, FUN = isi, USE.NAMES = FALSE)
@@ -1740,20 +1748,20 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
     judulantara <- antarajatim
 
     #Labelisasi sesuai katelapus
-    judulantara %>%
-      dplyr::mutate(katakunci = isiberita) %>%
-      tidyr::separate_rows(katakunci, sep = ' ') %>%
-      dplyr::mutate(katakunci = tolower(katakunci)) %>%
-      dplyr::left_join(katelapus) %>%
-      filter(!is.na(kategori)) %>%
+    judulantara |>
+      dplyr::mutate(katakunci = isiberita) |>
+      tidyr::separate_rows(katakunci, sep = ' ') |>
+      dplyr::mutate(katakunci = tolower(katakunci)) |>
+      dplyr::left_join(katelapus) |>
+      filter(!is.na(kategori)) |>
       dplyr::select(-katakunci) -> judulantara2
 
     #Mendapatkan kategori teks berdasarkan labelisasi kata paling sering muncul
-    judulantara2 %>%
-      dplyr::group_by(judul) %>%
+    judulantara2 |>
+      dplyr::group_by(judul) |>
       dplyr::summarise(kategori2 = names(sort(table(kategori), decreasing = TRUE))[1],
                        kategori = toString(kategori),
-                       .groups = "drop") %>%
+                       .groups = "drop") |>
       dplyr::select(judul, kategori, kategori2) -> oke
 
     #Menggabungkan antara data awal dengan data yang berhasil dilabelisasi
@@ -1766,7 +1774,7 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
                            paste("Kota", coba$wilayah),
                            coba$wilayah)
 
-    coba <- coba %>%
+    coba <- coba |>
       dplyr::mutate(
         tanggal = tgl,
         tanggal = gsub("Januari", "January", tanggal),
@@ -1781,7 +1789,7 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
       )
 
     # Mengubah format tanggal
-    coba <- coba %>%
+    coba <- coba |>
       dplyr::mutate(
         tanggal = case_when(
           grepl("menit lalu|jam lalu|hari lalu", tgl) ~ as.character(Sys.Date()),
@@ -1801,17 +1809,17 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
     laman_awal <- rvest::read_html(url_awal)
 
     # cek elemen end page
-    endpage <- laman_awal %>% rvest::html_nodes(".pagination-sm a") %>% rvest::html_text() %>% trimws() %>% max(na.rm = TRUE) %>% as.numeric()
+    endpage <- laman_awal |> rvest::html_nodes(".pagination-sm a") |> rvest::html_text() |> trimws() |> max(na.rm = TRUE) |> as.numeric()
 
     #LOOPING
     isi <- function(x){
-      teks <- rvest::read_html(x) %>% rvest::html_nodes('#print_content .clearfix') %>% rvest::html_text() %>% stringr::str_squish() %>%
+      teks <- rvest::read_html(x) |> rvest::html_nodes('#print_content .clearfix') |> rvest::html_text() |> stringr::str_squish() |>
         paste(collapse = ",")
       return(teks)
     }
 
     fotocap <- function(x){
-      narfoto <- rvest::read_html(x) %>% rvest::html_nodes('.flex-caption') %>% rvest::html_text() %>% stringr::str_squish() %>%
+      narfoto <- rvest::read_html(x) |> rvest::html_nodes('.flex-caption') |> rvest::html_text() |> stringr::str_squish() |>
         paste(collapse = ",")
       return(narfoto)
     }
@@ -1822,9 +1830,9 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
       url <-paste0("https://", wilayahantara, ".antaranews.com/search/", keyword, "/", awal, "/", akhir, "/", hasil)
       laman <- rvest::read_html(url)
 
-      judul <- laman %>% rvest::html_nodes('.simple-big h3 a') %>% rvest::html_text()
-      tgl <- laman %>% rvest::html_nodes('.simple-big span') %>% rvest::html_text()
-      linkjudul <- laman %>% rvest::html_nodes('.simple-big h3 a') %>% rvest::html_attr("href") %>%
+      judul <- laman |> rvest::html_nodes('.simple-big h3 a') |> rvest::html_text()
+      tgl <- laman |> rvest::html_nodes('.simple-big span') |> rvest::html_text()
+      linkjudul <- laman |> rvest::html_nodes('.simple-big h3 a') |> rvest::html_attr("href") |>
         paste(sep = "")
 
       isiberita <- sapply(linkjudul, FUN = isi, USE.NAMES = FALSE)
@@ -2035,20 +2043,20 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
     judulantara <- antarajatim
 
     #Labelisasi sesuai katelapus
-    judulantara %>%
-      dplyr::mutate(katakunci = isiberita) %>%
-      tidyr::separate_rows(katakunci, sep = ' ') %>%
-      dplyr::mutate(katakunci = tolower(katakunci)) %>%
-      dplyr::left_join(katelapus) %>%
-      filter(!is.na(kategori)) %>%
+    judulantara |>
+      dplyr::mutate(katakunci = isiberita) |>
+      tidyr::separate_rows(katakunci, sep = ' ') |>
+      dplyr::mutate(katakunci = tolower(katakunci)) |>
+      dplyr::left_join(katelapus) |>
+      filter(!is.na(kategori)) |>
       dplyr::select(-katakunci) -> judulantara2
 
     #Mendapatkan kategori teks berdasarkan labelisasi kata paling sering muncul
-    judulantara2 %>%
-      dplyr::group_by(judul) %>%
+    judulantara2 |>
+      dplyr::group_by(judul) |>
       dplyr::summarise(kategori2 = names(sort(table(kategori), decreasing = TRUE))[1],
                        kategori = toString(kategori),
-                       .groups = "drop") %>%
+                       .groups = "drop") |>
       dplyr::select(judul, kategori, kategori2) -> oke
 
     #Menggabungkan antara data awal dengan data yang berhasil dilabelisasi
@@ -2061,7 +2069,7 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
                            paste("Kota", coba$wilayah),
                            coba$wilayah)
 
-    coba <- coba %>%
+    coba <- coba |>
       dplyr::mutate(
         tanggal = tgl,
         tanggal = gsub("Januari", "January", tanggal),
@@ -2076,7 +2084,7 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
       )
 
     # Mengubah format tanggal
-    coba <- coba %>%
+    coba <- coba |>
       dplyr::mutate(
         tanggal = case_when(
           grepl("menit lalu|jam lalu|hari lalu", tgl) ~ as.character(Sys.Date()),
@@ -2096,17 +2104,17 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
     laman_awal <- rvest::read_html(url_awal)
 
     # cek elemen end page
-    endpage <- laman_awal %>% rvest::html_nodes(".pagination-sm a") %>% rvest::html_text() %>% trimws() %>% max(na.rm = TRUE) %>% as.numeric()
+    endpage <- laman_awal |> rvest::html_nodes(".pagination-sm a") |> rvest::html_text() |> trimws() |> max(na.rm = TRUE) |> as.numeric()
 
     #LOOPING
     isi <- function(x){
-      teks <- rvest::read_html(x) %>% rvest::html_nodes('.font17 p') %>% rvest::html_text() %>% stringr::str_squish() %>%
+      teks <- rvest::read_html(x) |> rvest::html_nodes('.font17 p') |> rvest::html_text() |> stringr::str_squish() |>
         paste(collapse = ",")
       return(teks)
     }
 
     fotocap <- function(x){
-      narfoto <- rvest::read_html(x) %>% rvest::html_nodes('.flex-caption') %>% rvest::html_text() %>% stringr::str_squish() %>%
+      narfoto <- rvest::read_html(x) |> rvest::html_nodes('.flex-caption') |> rvest::html_text() |> stringr::str_squish() |>
         paste(collapse = ",")
       return(narfoto)
     }
@@ -2117,9 +2125,9 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
       url <-paste0("https://", wilayahantara, ".antaranews.com/search/", keyword, "/", awal, "/", akhir, "/", hasil)
       laman <- rvest::read_html(url)
 
-      judul <- laman %>% rvest::html_nodes('.simple-big h3 a') %>% rvest::html_text()
-      tgl <- laman %>% rvest::html_nodes('.simple-big span') %>% rvest::html_text()
-      linkjudul <- laman %>% rvest::html_nodes('.simple-big h3 a') %>% rvest::html_attr("href") %>%
+      judul <- laman |> rvest::html_nodes('.simple-big h3 a') |> rvest::html_text()
+      tgl <- laman |> rvest::html_nodes('.simple-big span') |> rvest::html_text()
+      linkjudul <- laman |> rvest::html_nodes('.simple-big h3 a') |> rvest::html_attr("href") |>
         paste(sep = "")
 
       isiberita <- sapply(linkjudul, FUN = isi, USE.NAMES = FALSE)
@@ -2330,20 +2338,20 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
     judulantara <- antarajatim
 
     #Labelisasi sesuai katelapus
-    judulantara %>%
-      dplyr::mutate(katakunci = isiberita) %>%
-      tidyr::separate_rows(katakunci, sep = ' ') %>%
-      dplyr::mutate(katakunci = tolower(katakunci)) %>%
-      dplyr::left_join(katelapus) %>%
-      filter(!is.na(kategori)) %>%
+    judulantara |>
+      dplyr::mutate(katakunci = isiberita) |>
+      tidyr::separate_rows(katakunci, sep = ' ') |>
+      dplyr::mutate(katakunci = tolower(katakunci)) |>
+      dplyr::left_join(katelapus) |>
+      filter(!is.na(kategori)) |>
       dplyr::select(-katakunci) -> judulantara2
 
     #Mendapatkan kategori teks berdasarkan labelisasi kata paling sering muncul
-    judulantara2 %>%
-      dplyr::group_by(judul) %>%
+    judulantara2 |>
+      dplyr::group_by(judul) |>
       dplyr::summarise(kategori2 = names(sort(table(kategori), decreasing = TRUE))[1],
                        kategori = toString(kategori),
-                       .groups = "drop") %>%
+                       .groups = "drop") |>
       dplyr::select(judul, kategori, kategori2) -> oke
 
     #Menggabungkan antara data awal dengan data yang berhasil dilabelisasi
@@ -2356,7 +2364,7 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
                            paste("Kota", coba$wilayah),
                            coba$wilayah)
 
-    coba <- coba %>%
+    coba <- coba |>
       dplyr::mutate(
         tanggal = tgl,
         tanggal = gsub("Januari", "January", tanggal),
@@ -2371,7 +2379,7 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
       )
 
     # Mengubah format tanggal
-    coba <- coba %>%
+    coba <- coba |>
       dplyr::mutate(
         tanggal = case_when(
           grepl("menit lalu|jam lalu|hari lalu", tgl) ~ as.character(Sys.Date()),
@@ -2391,17 +2399,17 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
     laman_awal <- rvest::read_html(url_awal)
 
     # cek elemen end page
-    endpage <- laman_awal %>% rvest::html_nodes(".pagination-sm a") %>% rvest::html_text() %>% trimws() %>% max(na.rm = TRUE) %>% as.numeric()
+    endpage <- laman_awal |> rvest::html_nodes(".pagination-sm a") |> rvest::html_text() |> trimws() |> max(na.rm = TRUE) |> as.numeric()
 
     #LOOPING
     isi <- function(x){
-      teks <- rvest::read_html(x) %>% rvest::html_nodes('#print_content .clearfix') %>% rvest::html_text() %>% stringr::str_squish() %>%
+      teks <- rvest::read_html(x) |> rvest::html_nodes('#print_content .clearfix') |> rvest::html_text() |> stringr::str_squish() |>
         paste(collapse = ",")
       return(teks)
     }
 
     fotocap <- function(x){
-      narfoto <- rvest::read_html(x) %>% rvest::html_nodes('.flex-caption') %>% rvest::html_text() %>% stringr::str_squish() %>%
+      narfoto <- rvest::read_html(x) |> rvest::html_nodes('.flex-caption') |> rvest::html_text() |> stringr::str_squish() |>
         paste(collapse = ",")
       return(narfoto)
     }
@@ -2412,9 +2420,9 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
       url <-paste0("https://", wilayahantara, ".antaranews.com/search/", keyword, "/", awal, "/", akhir, "/", hasil)
       laman <- rvest::read_html(url)
 
-      judul <- laman %>% rvest::html_nodes('.simple-big h3 a') %>% rvest::html_text()
-      tgl <- laman %>% rvest::html_nodes('.simple-big span') %>% rvest::html_text()
-      linkjudul <- laman %>% rvest::html_nodes('.simple-big h3 a') %>% rvest::html_attr("href") %>%
+      judul <- laman |> rvest::html_nodes('.simple-big h3 a') |> rvest::html_text()
+      tgl <- laman |> rvest::html_nodes('.simple-big span') |> rvest::html_text()
+      linkjudul <- laman |> rvest::html_nodes('.simple-big h3 a') |> rvest::html_attr("href") |>
         paste(sep = "")
 
       isiberita <- sapply(linkjudul, FUN = isi, USE.NAMES = FALSE)
@@ -2625,20 +2633,20 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
     judulantara <- antarajatim
 
     #Labelisasi sesuai katelapus
-    judulantara %>%
-      dplyr::mutate(katakunci = isiberita) %>%
-      tidyr::separate_rows(katakunci, sep = ' ') %>%
-      dplyr::mutate(katakunci = tolower(katakunci)) %>%
-      dplyr::left_join(katelapus) %>%
-      filter(!is.na(kategori)) %>%
+    judulantara |>
+      dplyr::mutate(katakunci = isiberita) |>
+      tidyr::separate_rows(katakunci, sep = ' ') |>
+      dplyr::mutate(katakunci = tolower(katakunci)) |>
+      dplyr::left_join(katelapus) |>
+      filter(!is.na(kategori)) |>
       dplyr::select(-katakunci) -> judulantara2
 
     #Mendapatkan kategori teks berdasarkan labelisasi kata paling sering muncul
-    judulantara2 %>%
-      dplyr::group_by(judul) %>%
+    judulantara2 |>
+      dplyr::group_by(judul) |>
       dplyr::summarise(kategori2 = names(sort(table(kategori), decreasing = TRUE))[1],
                        kategori = toString(kategori),
-                       .groups = "drop") %>%
+                       .groups = "drop") |>
       dplyr::select(judul, kategori, kategori2) -> oke
 
     #Menggabungkan antara data awal dengan data yang berhasil dilabelisasi
@@ -2651,7 +2659,7 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
                            paste("Kota", coba$wilayah),
                            coba$wilayah)
 
-    coba <- coba %>%
+    coba <- coba |>
       dplyr::mutate(
         tanggal = tgl,
         tanggal = gsub("Januari", "January", tanggal),
@@ -2666,7 +2674,7 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
       )
 
     # Mengubah format tanggal
-    coba <- coba %>%
+    coba <- coba |>
       dplyr::mutate(
         tanggal = case_when(
           grepl("menit lalu|jam lalu|hari lalu", tgl) ~ as.character(Sys.Date()),
