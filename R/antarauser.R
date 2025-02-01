@@ -10,6 +10,7 @@
 #' @import stringr
 #' @import tibble
 #' @import tidyr
+#' @import tidyverse
 #' @importFrom stats filter
 #' @importFrom rvest read_html html_nodes html_text
 #' @importFrom dplyr mutate case_when
