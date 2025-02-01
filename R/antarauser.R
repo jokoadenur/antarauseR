@@ -6,15 +6,13 @@
 #' @param akhir Karakter. Tanggal akhir pencarian (misalnya "2025-01-31").
 #' @import rvest
 #' @import dplyr
-#' @import magrittr
 #' @import lubridate
 #' @import stringr
 #' @import tibble
 #' @import tidyr
 #' @importFrom stats filter
 #' @importFrom rvest read_html html_nodes html_text
-#' @importFrom dplyr |> mutate case_when
-#' @importFrom magrittr |>
+#' @importFrom dplyr mutate case_when
 #' @importFrom lubridate dmy_hm
 #' @importFrom stringr str_squish
 #' @importFrom tibble tribble
@@ -23,7 +21,8 @@
 #' @export
 
 utils::globalVariables(c("katakunci", "kategori", "kategori2", "tanggal", "lokasi",
-                         "isi", "|>", "fotocap", "endpage", "coba"))
+                         "isi", "|>", "fotocap", "endpage", "coba",
+                         "filter", "case_when"))
 
 antarauser <- function(wilayahantara, keyword, awal, akhir) {
   if(wilayahantara == "jatim"){
