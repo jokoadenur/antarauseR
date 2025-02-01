@@ -10,7 +10,7 @@
 
 # antarauseR
 
-`antarauseR` is an R package designed for scraping news articles from various Antara News branches in Indonesia. With this package, you can easily retrieve news data for a specified number of pages.
+`antarauseR` is an R package designed for scraping news articles from various Antara News in Indonesia. With this package, you can easily retrieve news data for a specified number of pages.
 
 ## Installation
 
@@ -18,59 +18,33 @@ To install the `antarauseR` package, run the following code in your R script:
 
 ```R
 # Install package from GitHub
-devtools::install_github("jokoadenur/scraperadaR")
+devtools::install_github("jokoadenur/antarauseR")
 ```
 
-> **Note:** If prompted to update certain packages (options like 1. All, 2. CRAN, etc.), simply press **ENTER** to skip. Wait until the installation process is complete and the message `DONE (scraperadaR)` appears.
+> **Note:** If prompted to update certain packages (options like 1. All, 2. CRAN, etc.), simply press **ENTER** to skip. Wait until the installation process is complete and the message `DONE (antarauseR)` appears.
 
 After installation, activate the package with the following code:
 
 ```R
 # Activate the package
-library(scraperadaR)
+library(antarauseR)
 ```
 
 ## Usage
 
-To scrape news articles from a Radar branch, use the `scraperadar()` function with the following format:
+To scrape news articles from Antara News in Indonesia, use the `antarauser()` function with the following format:
 
 ```R
-scraperadar("radar branch name", number_of_pages)
+antarauser("Antara Nesws sites name", "keywords", "start_period", "end_period")
 ```
 
 ### Examples:
 
-1. Scraping 5 pages of news from Radar Tuban:
+   Scraping news from Antara Jawa Timur (jatim.antaranews.com) with keyword "ekonomi", start from "2025-01-01" to "2025-01-31":
    ```R
-   scraperadar("tuban", 5)
+   antarauser("jatim", "ekonomi", "2025-01-01", "2025-01-31")
    ```
+   As a disclaimer: this package still cover jatim.antaranews.com, jateng.antaranews.com, jogja.antaranews.com, bali.antaranews.com, jabar.antaranews.com,
+   lampung.antaranews.com, makassar.antaranews.com, and bengkulu.antaranews.com
 
-2. Scraping 2 pages of news from Radar Solo:
-   ```R
-   scraperadar("solo", 2)
-   ```
-
-## List of Radar Branches
-
-### East Java
-- Radar Madiun
-- Radar Jember
-- Radar Banyuwangi
-- Radar Bromo
-- Radar Malang
-- Radar Mojokerto
-- Radar Lamongan
-- Radar Surabaya
-- Radar Kediri
-- Radar Tulungagung
-- Radar Bojonegoro
-- Radar Lawu
-- Radar Madura
-
-### Central Java
-- Radar Semarang
-- Radar Solo
-- Radar Kudus
-- Radar Jogja
-
-With `scraperadaR`, scraping news becomes easier and more efficient. Happy scraping!
+With `antarauseR`, scraping news becomes easier and more efficient. Happy scraping!
