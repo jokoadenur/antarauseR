@@ -14,6 +14,9 @@
 #' @return Data yang sesuai dengan pencarian.
 #' @export
 
+utils::globalVariables(c("katakunci", "kategori", "kategori2", "tanggal", "lokasi",
+                         "isi", "%>%", "fotocap", "endpage", "coba"))
+
 antarauser <- function(wilayahantara, keyword, awal, akhir) {
   if(wilayahantara == "jatim"){
     keyword <- gsub(" ", "+", keyword)
