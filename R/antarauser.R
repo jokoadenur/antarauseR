@@ -34,12 +34,12 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
     laman_awal <- rvest::read_html(url_awal)
 
     # cek elemen end page
-    endpage <- laman_awal |> rvest::html_nodes(".pagination-sm a") |> rvest::html_text() |> trimws() |> max(na.rm = TRUE) |> as.numeric()
+    endpage <- laman_awal |> rvest::html_nodes(".pagination a") |> rvest::html_text() |> trimws() |> max(na.rm = TRUE) |> as.numeric()
 
     #LOOPING
     isi <- function(x){
       teks <- rvest::read_html(x) |> rvest::html_nodes('#print_content .clearfix') |> rvest::html_text() |> stringr::str_squish() |>
-        paste(collapse = ",")
+        paste(collapse = ",") |> %>% str_replace_all("^.*?\\(ANTARA\\)\\s*-\\s*", "") |> str_replace("Dilarang keras mengambil konten, melakukan crawling atau pengindeksan otomatis untuk AI di situs web ini tanpa izin tertulis dari Kantor Berita ANTARA.", "")
       return(teks)
     }
 
@@ -55,9 +55,9 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
       url <-paste0("https://", wilayahantara, ".antaranews.com/search/", keyword, "/", awal, "/", akhir, "/", hasil)
       laman <- rvest::read_html(url)
 
-      judul <- laman |> rvest::html_nodes('.simple-big h3 a') |> rvest::html_text()
-      tgl <- laman |> rvest::html_nodes('.simple-big span') |> rvest::html_text()
-      linkjudul <- laman |> rvest::html_nodes('.simple-big h3 a') |> rvest::html_attr("href") |>
+      judul <- laman |> rvest::html_nodes('.h5 a') |> rvest::html_text()
+      tgl <- laman |> rvest::html_nodes('.text-capitalize') |> rvest::html_text()
+      linkjudul <- laman |> rvest::html_nodes('.h5 a') |> rvest::html_attr("href") |>
         paste(sep = "")
 
       isiberita <- sapply(linkjudul, FUN = isi, USE.NAMES = FALSE)
@@ -330,12 +330,12 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
     laman_awal <- rvest::read_html(url_awal)
 
     # cek elemen end page
-    endpage <- laman_awal |> rvest::html_nodes(".pagination-sm a") |> rvest::html_text() |> trimws() |> max(na.rm = TRUE) |> as.numeric()
+    endpage <- laman_awal |> rvest::html_nodes(".pagination a") |> rvest::html_text() |> trimws() |> max(na.rm = TRUE) |> as.numeric()
 
     #LOOPING
     isi <- function(x){
       teks <- rvest::read_html(x) |> rvest::html_nodes('.font17 p') |> rvest::html_text() |> stringr::str_squish() |>
-        paste(collapse = ",")
+        paste(collapse = ",") |> %>% str_replace_all("^.*?\\(ANTARA\\)\\s*-\\s*", "") |> str_replace("Dilarang keras mengambil konten, melakukan crawling atau pengindeksan otomatis untuk AI di situs web ini tanpa izin tertulis dari Kantor Berita ANTARA.", "")
       return(teks)
     }
 
@@ -351,9 +351,9 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
       url <-paste0("https://", wilayahantara, ".antaranews.com/search/", keyword, "/", awal, "/", akhir, "/", hasil)
       laman <- rvest::read_html(url)
 
-      judul <- laman |> rvest::html_nodes('.simple-big h3 a') |> rvest::html_text()
-      tgl <- laman |> rvest::html_nodes('.simple-big span') |> rvest::html_text()
-      linkjudul <- laman |> rvest::html_nodes('.simple-big h3 a') |> rvest::html_attr("href") |>
+      judul <- laman |> rvest::html_nodes('.h5 a') |> rvest::html_text()
+      tgl <- laman |> rvest::html_nodes('.text-capitalize') |> rvest::html_text()
+      linkjudul <- laman |> rvest::html_nodes('.h5 a') |> rvest::html_attr("href") |>
         paste(sep = "")
 
       isiberita <- sapply(linkjudul, FUN = isi, USE.NAMES = FALSE)
@@ -626,12 +626,12 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
     laman_awal <- rvest::read_html(url_awal)
 
     # cek elemen end page
-    endpage <- laman_awal |> rvest::html_nodes(".pagination-sm a") |> rvest::html_text() |> trimws() |> max(na.rm = TRUE) |> as.numeric()
+    endpage <- laman_awal |> rvest::html_nodes(".pagination a") |> rvest::html_text() |> trimws() |> max(na.rm = TRUE) |> as.numeric()
 
     #LOOPING
     isi <- function(x){
       teks <- rvest::read_html(x) |> rvest::html_nodes('#print_content .clearfix') |> rvest::html_text() |> stringr::str_squish() |>
-        paste(collapse = ",")
+        paste(collapse = ",") |> %>% str_replace_all("^.*?\\(ANTARA\\)\\s*-\\s*", "") |> str_replace("Dilarang keras mengambil konten, melakukan crawling atau pengindeksan otomatis untuk AI di situs web ini tanpa izin tertulis dari Kantor Berita ANTARA.", "")
       return(teks)
     }
 
@@ -647,9 +647,9 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
       url <-paste0("https://", wilayahantara, ".antaranews.com/search/", keyword, "/", awal, "/", akhir, "/", hasil)
       laman <- rvest::read_html(url)
 
-      judul <- laman |> rvest::html_nodes('.simple-big h3 a') |> rvest::html_text()
-      tgl <- laman |> rvest::html_nodes('.simple-big span') |> rvest::html_text()
-      linkjudul <- laman |> rvest::html_nodes('.simple-big h3 a') |> rvest::html_attr("href") |>
+      judul <- laman |> rvest::html_nodes('.h5 a') |> rvest::html_text()
+      tgl <- laman |> rvest::html_nodes('.text-capitalize') |> rvest::html_text()
+      linkjudul <- laman |> rvest::html_nodes('.h5 a') |> rvest::html_attr("href") |>
         paste(sep = "")
 
       isiberita <- sapply(linkjudul, FUN = isi, USE.NAMES = FALSE)
@@ -922,12 +922,12 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
     laman_awal <- rvest::read_html(url_awal)
 
     # cek elemen end page
-    endpage <- laman_awal |> rvest::html_nodes(".pagination-sm a") |> rvest::html_text() |> trimws() |> max(na.rm = TRUE) |> as.numeric()
+    endpage <- laman_awal |> rvest::html_nodes(".pagination a") |> rvest::html_text() |> trimws() |> max(na.rm = TRUE) |> as.numeric()
 
     #LOOPING
     isi <- function(x){
       teks <- rvest::read_html(x) |> rvest::html_nodes('#print_content .clearfix') |> rvest::html_text() |> stringr::str_squish() |>
-        paste(collapse = ",")
+        paste(collapse = ",") |> %>% str_replace_all("^.*?\\(ANTARA\\)\\s*-\\s*", "") |> str_replace("Dilarang keras mengambil konten, melakukan crawling atau pengindeksan otomatis untuk AI di situs web ini tanpa izin tertulis dari Kantor Berita ANTARA.", "")
       return(teks)
     }
 
@@ -943,9 +943,9 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
       url <-paste0("https://", wilayahantara, ".antaranews.com/search/", keyword, "/", awal, "/", akhir, "/", hasil)
       laman <- rvest::read_html(url)
 
-      judul <- laman |> rvest::html_nodes('.simple-big h3 a') |> rvest::html_text()
-      tgl <- laman |> rvest::html_nodes('.simple-big span') |> rvest::html_text()
-      linkjudul <- laman |> rvest::html_nodes('.simple-big h3 a') |> rvest::html_attr("href") |>
+      judul <- laman |> rvest::html_nodes('.h5 a') |> rvest::html_text()
+      tgl <- laman |> rvest::html_nodes('.text-capitalize') |> rvest::html_text()
+      linkjudul <- laman |> rvest::html_nodes('.h5 a') |> rvest::html_attr("href") |>
         paste(sep = "")
 
       isiberita <- sapply(linkjudul, FUN = isi, USE.NAMES = FALSE)
@@ -1218,12 +1218,12 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
     laman_awal <- rvest::read_html(url_awal)
 
     # cek elemen end page
-    endpage <- laman_awal |> rvest::html_nodes(".pagination-sm a") |> rvest::html_text() |> trimws() |> max(na.rm = TRUE) |> as.numeric()
+    endpage <- laman_awal |> rvest::html_nodes(".pagination a") |> rvest::html_text() |> trimws() |> max(na.rm = TRUE) |> as.numeric()
 
     #LOOPING
     isi <- function(x){
       teks <- rvest::read_html(x) |> rvest::html_nodes('.font17 p') |> rvest::html_text() |> stringr::str_squish() |>
-        paste(collapse = ",")
+        paste(collapse = ",") |> %>% str_replace_all("^.*?\\(ANTARA\\)\\s*-\\s*", "") |> str_replace("Dilarang keras mengambil konten, melakukan crawling atau pengindeksan otomatis untuk AI di situs web ini tanpa izin tertulis dari Kantor Berita ANTARA.", "")
       return(teks)
     }
 
@@ -1239,9 +1239,9 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
       url <-paste0("https://", wilayahantara, ".antaranews.com/search/", keyword, "/", awal, "/", akhir, "/", hasil)
       laman <- rvest::read_html(url)
 
-      judul <- laman |> rvest::html_nodes('.simple-big h3 a') |> rvest::html_text()
-      tgl <- laman |> rvest::html_nodes('.simple-big span') |> rvest::html_text()
-      linkjudul <- laman |> rvest::html_nodes('.simple-big h3 a') |> rvest::html_attr("href") |>
+      judul <- laman |> rvest::html_nodes('.h5 a') |> rvest::html_text()
+      tgl <- laman |> rvest::html_nodes('.text-capitalize') |> rvest::html_text()
+      linkjudul <- laman |> rvest::html_nodes('.h5 a') |> rvest::html_attr("href") |>
         paste(sep = "")
 
       isiberita <- sapply(linkjudul, FUN = isi, USE.NAMES = FALSE)
@@ -1514,12 +1514,12 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
     laman_awal <- rvest::read_html(url_awal)
 
     # cek elemen end page
-    endpage <- laman_awal |> rvest::html_nodes(".pagination-sm a") |> rvest::html_text() |> trimws() |> max(na.rm = TRUE) |> as.numeric()
+    endpage <- laman_awal |> rvest::html_nodes(".pagination a") |> rvest::html_text() |> trimws() |> max(na.rm = TRUE) |> as.numeric()
 
     #LOOPING
     isi <- function(x){
       teks <- rvest::read_html(x) |> rvest::html_nodes('#print_content .clearfix') |> rvest::html_text() |> stringr::str_squish() |>
-        paste(collapse = ",")
+        paste(collapse = ",") |> %>% str_replace_all("^.*?\\(ANTARA\\)\\s*-\\s*", "") |> str_replace("Dilarang keras mengambil konten, melakukan crawling atau pengindeksan otomatis untuk AI di situs web ini tanpa izin tertulis dari Kantor Berita ANTARA.", "")
       return(teks)
     }
 
@@ -1535,9 +1535,9 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
       url <-paste0("https://", wilayahantara, ".antaranews.com/search/", keyword, "/", awal, "/", akhir, "/", hasil)
       laman <- rvest::read_html(url)
 
-      judul <- laman |> rvest::html_nodes('.simple-big h3 a') |> rvest::html_text()
-      tgl <- laman |> rvest::html_nodes('.simple-big span') |> rvest::html_text()
-      linkjudul <- laman |> rvest::html_nodes('.simple-big h3 a') |> rvest::html_attr("href") |>
+      judul <- laman |> rvest::html_nodes('.h5 a') |> rvest::html_text()
+      tgl <- laman |> rvest::html_nodes('.text-capitalize') |> rvest::html_text()
+      linkjudul <- laman |> rvest::html_nodes('.h5 a') |> rvest::html_attr("href") |>
         paste(sep = "")
 
       isiberita <- sapply(linkjudul, FUN = isi, USE.NAMES = FALSE)
@@ -1809,12 +1809,12 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
     laman_awal <- rvest::read_html(url_awal)
 
     # cek elemen end page
-    endpage <- laman_awal |> rvest::html_nodes(".pagination-sm a") |> rvest::html_text() |> trimws() |> max(na.rm = TRUE) |> as.numeric()
+    endpage <- laman_awal |> rvest::html_nodes(".pagination a") |> rvest::html_text() |> trimws() |> max(na.rm = TRUE) |> as.numeric()
 
     #LOOPING
     isi <- function(x){
       teks <- rvest::read_html(x) |> rvest::html_nodes('#print_content .clearfix') |> rvest::html_text() |> stringr::str_squish() |>
-        paste(collapse = ",")
+        paste(collapse = ",") |> %>% str_replace_all("^.*?\\(ANTARA\\)\\s*-\\s*", "") |> str_replace("Dilarang keras mengambil konten, melakukan crawling atau pengindeksan otomatis untuk AI di situs web ini tanpa izin tertulis dari Kantor Berita ANTARA.", "")
       return(teks)
     }
 
@@ -1830,9 +1830,9 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
       url <-paste0("https://", wilayahantara, ".antaranews.com/search/", keyword, "/", awal, "/", akhir, "/", hasil)
       laman <- rvest::read_html(url)
 
-      judul <- laman |> rvest::html_nodes('.simple-big h3 a') |> rvest::html_text()
-      tgl <- laman |> rvest::html_nodes('.simple-big span') |> rvest::html_text()
-      linkjudul <- laman |> rvest::html_nodes('.simple-big h3 a') |> rvest::html_attr("href") |>
+      judul <- laman |> rvest::html_nodes('.h5 a') |> rvest::html_text()
+      tgl <- laman |> rvest::html_nodes('.text-capitalize') |> rvest::html_text()
+      linkjudul <- laman |> rvest::html_nodes('.h5 a') |> rvest::html_attr("href") |>
         paste(sep = "")
 
       isiberita <- sapply(linkjudul, FUN = isi, USE.NAMES = FALSE)
@@ -2104,12 +2104,12 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
     laman_awal <- rvest::read_html(url_awal)
 
     # cek elemen end page
-    endpage <- laman_awal |> rvest::html_nodes(".pagination-sm a") |> rvest::html_text() |> trimws() |> max(na.rm = TRUE) |> as.numeric()
+    endpage <- laman_awal |> rvest::html_nodes(".pagination a") |> rvest::html_text() |> trimws() |> max(na.rm = TRUE) |> as.numeric()
 
     #LOOPING
     isi <- function(x){
       teks <- rvest::read_html(x) |> rvest::html_nodes('.font17 p') |> rvest::html_text() |> stringr::str_squish() |>
-        paste(collapse = ",")
+        paste(collapse = ",") |> %>% str_replace_all("^.*?\\(ANTARA\\)\\s*-\\s*", "") |> str_replace("Dilarang keras mengambil konten, melakukan crawling atau pengindeksan otomatis untuk AI di situs web ini tanpa izin tertulis dari Kantor Berita ANTARA.", "")
       return(teks)
     }
 
@@ -2125,9 +2125,9 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
       url <-paste0("https://", wilayahantara, ".antaranews.com/search/", keyword, "/", awal, "/", akhir, "/", hasil)
       laman <- rvest::read_html(url)
 
-      judul <- laman |> rvest::html_nodes('.simple-big h3 a') |> rvest::html_text()
-      tgl <- laman |> rvest::html_nodes('.simple-big span') |> rvest::html_text()
-      linkjudul <- laman |> rvest::html_nodes('.simple-big h3 a') |> rvest::html_attr("href") |>
+      judul <- laman |> rvest::html_nodes('.h5 a') |> rvest::html_text()
+      tgl <- laman |> rvest::html_nodes('.text-capitalize') |> rvest::html_text()
+      linkjudul <- laman |> rvest::html_nodes('.h5 a') |> rvest::html_attr("href") |>
         paste(sep = "")
 
       isiberita <- sapply(linkjudul, FUN = isi, USE.NAMES = FALSE)
@@ -2399,12 +2399,12 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
     laman_awal <- rvest::read_html(url_awal)
 
     # cek elemen end page
-    endpage <- laman_awal |> rvest::html_nodes(".pagination-sm a") |> rvest::html_text() |> trimws() |> max(na.rm = TRUE) |> as.numeric()
+    endpage <- laman_awal |> rvest::html_nodes(".pagination a") |> rvest::html_text() |> trimws() |> max(na.rm = TRUE) |> as.numeric()
 
     #LOOPING
     isi <- function(x){
       teks <- rvest::read_html(x) |> rvest::html_nodes('#print_content .clearfix') |> rvest::html_text() |> stringr::str_squish() |>
-        paste(collapse = ",")
+        paste(collapse = ",") |> %>% str_replace_all("^.*?\\(ANTARA\\)\\s*-\\s*", "") |> str_replace("Dilarang keras mengambil konten, melakukan crawling atau pengindeksan otomatis untuk AI di situs web ini tanpa izin tertulis dari Kantor Berita ANTARA.", "")
       return(teks)
     }
 
@@ -2420,9 +2420,9 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
       url <-paste0("https://", wilayahantara, ".antaranews.com/search/", keyword, "/", awal, "/", akhir, "/", hasil)
       laman <- rvest::read_html(url)
 
-      judul <- laman |> rvest::html_nodes('.simple-big h3 a') |> rvest::html_text()
-      tgl <- laman |> rvest::html_nodes('.simple-big span') |> rvest::html_text()
-      linkjudul <- laman |> rvest::html_nodes('.simple-big h3 a') |> rvest::html_attr("href") |>
+      judul <- laman |> rvest::html_nodes('.h5 a') |> rvest::html_text()
+      tgl <- laman |> rvest::html_nodes('.text-capitalize') |> rvest::html_text()
+      linkjudul <- laman |> rvest::html_nodes('.h5 a') |> rvest::html_attr("href") |>
         paste(sep = "")
 
       isiberita <- sapply(linkjudul, FUN = isi, USE.NAMES = FALSE)
