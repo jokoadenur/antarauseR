@@ -39,7 +39,7 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
     #LOOPING
     isi <- function(x){
       teks <- rvest::read_html(x) |> rvest::html_nodes('#print_content .clearfix') |> rvest::html_text() |> stringr::str_squish() |>
-        paste(collapse = ",") |> %>% str_replace_all("^.*?\\(ANTARA\\)\\s*-\\s*", "") |> str_replace("Dilarang keras mengambil konten, melakukan crawling atau pengindeksan otomatis untuk AI di situs web ini tanpa izin tertulis dari Kantor Berita ANTARA.", "")
+        paste(collapse = ",") |> str_replace_all("^.*?\\(ANTARA\\)\\s*-\\s*", "") |> str_replace("Dilarang keras mengambil konten, melakukan crawling atau pengindeksan otomatis untuk AI di situs web ini tanpa izin tertulis dari Kantor Berita ANTARA.", "")
       return(teks)
     }
 
@@ -335,7 +335,7 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
     #LOOPING
     isi <- function(x){
       teks <- rvest::read_html(x) |> rvest::html_nodes('.font17 p') |> rvest::html_text() |> stringr::str_squish() |>
-        paste(collapse = ",") |> %>% str_replace_all("^.*?\\(ANTARA\\)\\s*-\\s*", "") |> str_replace("Dilarang keras mengambil konten, melakukan crawling atau pengindeksan otomatis untuk AI di situs web ini tanpa izin tertulis dari Kantor Berita ANTARA.", "")
+        paste(collapse = ",") |> str_replace_all("^.*?\\(ANTARA\\)\\s*-\\s*", "") |> str_replace("Dilarang keras mengambil konten, melakukan crawling atau pengindeksan otomatis untuk AI di situs web ini tanpa izin tertulis dari Kantor Berita ANTARA.", "")
       return(teks)
     }
 
@@ -631,7 +631,7 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
     #LOOPING
     isi <- function(x){
       teks <- rvest::read_html(x) |> rvest::html_nodes('#print_content .clearfix') |> rvest::html_text() |> stringr::str_squish() |>
-        paste(collapse = ",") |> %>% str_replace_all("^.*?\\(ANTARA\\)\\s*-\\s*", "") |> str_replace("Dilarang keras mengambil konten, melakukan crawling atau pengindeksan otomatis untuk AI di situs web ini tanpa izin tertulis dari Kantor Berita ANTARA.", "")
+        paste(collapse = ",") |> str_replace_all("^.*?\\(ANTARA\\)\\s*-\\s*", "") |> str_replace("Dilarang keras mengambil konten, melakukan crawling atau pengindeksan otomatis untuk AI di situs web ini tanpa izin tertulis dari Kantor Berita ANTARA.", "")
       return(teks)
     }
 
@@ -927,7 +927,7 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
     #LOOPING
     isi <- function(x){
       teks <- rvest::read_html(x) |> rvest::html_nodes('#print_content .clearfix') |> rvest::html_text() |> stringr::str_squish() |>
-        paste(collapse = ",") |> %>% str_replace_all("^.*?\\(ANTARA\\)\\s*-\\s*", "") |> str_replace("Dilarang keras mengambil konten, melakukan crawling atau pengindeksan otomatis untuk AI di situs web ini tanpa izin tertulis dari Kantor Berita ANTARA.", "")
+        paste(collapse = ",") |> str_replace_all("^.*?\\(ANTARA\\)\\s*-\\s*", "") |> str_replace("Dilarang keras mengambil konten, melakukan crawling atau pengindeksan otomatis untuk AI di situs web ini tanpa izin tertulis dari Kantor Berita ANTARA.", "")
       return(teks)
     }
 
@@ -1223,7 +1223,7 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
     #LOOPING
     isi <- function(x){
       teks <- rvest::read_html(x) |> rvest::html_nodes('.font17 p') |> rvest::html_text() |> stringr::str_squish() |>
-        paste(collapse = ",") |> %>% str_replace_all("^.*?\\(ANTARA\\)\\s*-\\s*", "") |> str_replace("Dilarang keras mengambil konten, melakukan crawling atau pengindeksan otomatis untuk AI di situs web ini tanpa izin tertulis dari Kantor Berita ANTARA.", "")
+        paste(collapse = ",") |> str_replace_all("^.*?\\(ANTARA\\)\\s*-\\s*", "") |> str_replace("Dilarang keras mengambil konten, melakukan crawling atau pengindeksan otomatis untuk AI di situs web ini tanpa izin tertulis dari Kantor Berita ANTARA.", "")
       return(teks)
     }
 
@@ -1519,7 +1519,7 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
     #LOOPING
     isi <- function(x){
       teks <- rvest::read_html(x) |> rvest::html_nodes('#print_content .clearfix') |> rvest::html_text() |> stringr::str_squish() |>
-        paste(collapse = ",") |> %>% str_replace_all("^.*?\\(ANTARA\\)\\s*-\\s*", "") |> str_replace("Dilarang keras mengambil konten, melakukan crawling atau pengindeksan otomatis untuk AI di situs web ini tanpa izin tertulis dari Kantor Berita ANTARA.", "")
+        paste(collapse = ",") |> str_replace_all("^.*?\\(ANTARA\\)\\s*-\\s*", "") |> str_replace("Dilarang keras mengambil konten, melakukan crawling atau pengindeksan otomatis untuk AI di situs web ini tanpa izin tertulis dari Kantor Berita ANTARA.", "")
       return(teks)
     }
 
@@ -1814,7 +1814,7 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
     #LOOPING
     isi <- function(x){
       teks <- rvest::read_html(x) |> rvest::html_nodes('#print_content .clearfix') |> rvest::html_text() |> stringr::str_squish() |>
-        paste(collapse = ",") |> %>% str_replace_all("^.*?\\(ANTARA\\)\\s*-\\s*", "") |> str_replace("Dilarang keras mengambil konten, melakukan crawling atau pengindeksan otomatis untuk AI di situs web ini tanpa izin tertulis dari Kantor Berita ANTARA.", "")
+        paste(collapse = ",") |> str_replace_all("^.*?\\(ANTARA\\)\\s*-\\s*", "") |> str_replace("Dilarang keras mengambil konten, melakukan crawling atau pengindeksan otomatis untuk AI di situs web ini tanpa izin tertulis dari Kantor Berita ANTARA.", "")
       return(teks)
     }
 
@@ -2109,7 +2109,7 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
     #LOOPING
     isi <- function(x){
       teks <- rvest::read_html(x) |> rvest::html_nodes('.font17 p') |> rvest::html_text() |> stringr::str_squish() |>
-        paste(collapse = ",") |> %>% str_replace_all("^.*?\\(ANTARA\\)\\s*-\\s*", "") |> str_replace("Dilarang keras mengambil konten, melakukan crawling atau pengindeksan otomatis untuk AI di situs web ini tanpa izin tertulis dari Kantor Berita ANTARA.", "")
+        paste(collapse = ",") |> str_replace_all("^.*?\\(ANTARA\\)\\s*-\\s*", "") |> str_replace("Dilarang keras mengambil konten, melakukan crawling atau pengindeksan otomatis untuk AI di situs web ini tanpa izin tertulis dari Kantor Berita ANTARA.", "")
       return(teks)
     }
 
@@ -2404,7 +2404,7 @@ antarauser <- function(wilayahantara, keyword, awal, akhir) {
     #LOOPING
     isi <- function(x){
       teks <- rvest::read_html(x) |> rvest::html_nodes('#print_content .clearfix') |> rvest::html_text() |> stringr::str_squish() |>
-        paste(collapse = ",") |> %>% str_replace_all("^.*?\\(ANTARA\\)\\s*-\\s*", "") |> str_replace("Dilarang keras mengambil konten, melakukan crawling atau pengindeksan otomatis untuk AI di situs web ini tanpa izin tertulis dari Kantor Berita ANTARA.", "")
+        paste(collapse = ",") |> str_replace_all("^.*?\\(ANTARA\\)\\s*-\\s*", "") |> str_replace("Dilarang keras mengambil konten, melakukan crawling atau pengindeksan otomatis untuk AI di situs web ini tanpa izin tertulis dari Kantor Berita ANTARA.", "")
       return(teks)
     }
 
